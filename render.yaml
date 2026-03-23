@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: launchblast-product-name
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DEVTO_API_KEY
+        sync: false
+      - key: DEVTO_PUBLISH_IMMEDIATELY
+        value: false
+      - key: HN_USERNAME
+        sync: false
+      - key: HN_PASSWORD
+        sync: false
+      - key: APP_SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.0

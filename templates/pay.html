@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Checkout - LaunchBlast{% endblock %}
+{% block content %}
+<section class="glass rounded-[28px] p-6 md:p-8 lg:p-10 fade-up max-w-3xl mx-auto mt-10">
+  <div class="inline-flex items-center gap-2 chip rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.3em] text-slate-300 mb-5">
+    <span class="status-dot bg-amber-300"></span>
+    Checkout
+  </div>
+  <h1 class="display-font text-4xl md:text-5xl font-bold leading-[0.92] mb-4">
+    LaunchBlast checkout
+  </h1>
+  <p class="text-base md:text-lg text-slate-300 leading-8 max-w-2xl">
+    This page is the payment destination for the launch workflow. It keeps the route visible and ready for a real checkout integration.
+  </p>
+
+  <div class="mt-8 flex flex-col sm:flex-row gap-3">
+    <a href="{{ url_for('index') }}" class="button secondary">
+      Back to launch
+    </a>
+    <a href="#" class="button">
+      Continue to checkout
+    </a>
+  </div>
+</section>
+{% endblock %}

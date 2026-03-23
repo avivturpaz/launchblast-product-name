@@ -1,0 +1,216 @@
+{% extends "base.html" %}
+{% block title %}LaunchBlast{% endblock %}
+{% block content %}
+<section class="glass rounded-[28px] p-6 md:p-8 lg:p-10 fade-up">
+  <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center gap-2 chip rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.3em] text-slate-300 mb-5">
+        <span class="status-dot bg-emerald-300"></span>
+        LaunchBlast
+      </div>
+      <h1 class="display-font text-4xl md:text-5xl lg:text-7xl font-bold leading-[0.92] mb-4">
+        Turn one launch brief into a dev.to post and Hacker News submission.
+      </h1>
+      <p class="text-base md:text-lg text-slate-300 max-w-2xl leading-8">
+        For founders and small teams launching a product, LaunchBlast removes the copy-paste loop: enter the brief once, publish the announcement, and track the results in one place.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-3 mt-6">
+        <a href="#launch-form" class="button">
+          Create launch
+        </a>
+        <a href="{{ url_for('pay') }}" class="button secondary">
+          Buy / checkout
+        </a>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-3 min-w-[18rem]">
+      <div class="glass-strong rounded-3xl p-4 stat">
+        <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">dev.to</div>
+        <div class="text-lg font-semibold {% if env_status.devto %}text-emerald-300{% else %}text-amber-300{% endif %}">
+          {% if env_status.devto %}Configured{% else %}Needs key{% endif %}
+        </div>
+        <p class="text-sm text-slate-400 mt-2">Uses <code>integrations/devto.py</code>.</p>
+      </div>
+      <div class="glass-strong rounded-3xl p-4 stat">
+        <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Hacker News</div>
+        <div class="text-lg font-semibold {% if env_status.hn %}text-emerald-300{% else %}text-amber-300{% endif %}">
+          {% if env_status.hn %}Configured{% else %}Needs creds{% endif %}
+        </div>
+        <p class="text-sm text-slate-400 mt-2">Uses <code>integrations/hackernews.py</code>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 mt-8 items-start">
+  <section class="glass rounded-[28px] p-6 md:p-8 fade-up" id="launch-form">
+    <div class="flex items-center justify-between gap-4 mb-6">
+      <div>
+        <h2 class="text-2xl md:text-3xl font-bold">Create a launch</h2>
+        <p class="muted mt-1">The same data powers the article body and the HN post.</p>
+      </div>
+    </div>
+
+    {% if error %}
+    <div class="mb-6 rounded-2xl border border-rose-400/30 bg-rose-400/10 px-4 py-3 text-rose-200 text-sm">
+      {{ error }}
+    </div>
+    {% endif %}
+
+    <form action="{{ url_for('submit') }}" method="POST" class="space-y-5">
+      <div class="grid md:grid-cols-2 gap-5">
+        <label class="block">
+          <span class="block text-sm font-medium text-slate-300 mb-2">Product name</span>
+          <input
+            class="field"
+            name="product_name"
+            required
+            value="{{ form_data.product_name }}"
+            placeholder="LaunchBlast"
+          />
+        </label>
+        <label class="block">
+          <span class="block text-sm font-medium text-slate-300 mb-2">Product URL</span>
+          <input
+            class="field"
+            name="product_url"
+            required
+            value="{{ form_data.product_url }}"
+            placeholder="https://example.com"
+          />
+        </label>
+      </div>
+
+      <label class="block">
+        <span class="block text-sm font-medium text-slate-300 mb-2">Tagline</span>
+        <input
+          class="field"
+          name="tagline"
+          required
+          value="{{ form_data.tagline }}"
+          placeholder="Ship the announcement once"
+        />
+      </label>
+
+      <label class="block">
+        <span class="block text-sm font-medium text-slate-300 mb-2">Description</span>
+        <textarea
+          class="field"
+          name="description"
+          required
+          placeholder="Explain what the product does, who it is for, and why this launch matters."
+        >{{ form_data.description }}</textarea>
+      </label>
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <p class="text-sm text-slate-400 leading-6">
+          LaunchBlast posts to dev.to through the API helper and submits to HN through the login flow, then stores the response details locally.
+        </p>
+        <button type="submit" class="button">
+          Publish launch
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <aside class="space-y-8">
+    <section class="glass rounded-[28px] p-6 md:p-8 fade-up">
+      <div class="flex items-center justify-between gap-4 mb-5">
+        <div>
+          <h2 class="text-xl md:text-2xl font-bold">Status dashboard</h2>
+          <p class="muted mt-1">Counts update after each submission.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="chip rounded-2xl p-4">
+          <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Complete</div>
+          <div class="text-2xl font-bold text-emerald-300">{{ dashboard_counts.complete }}</div>
+        </div>
+        <div class="chip rounded-2xl p-4">
+          <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Partial</div>
+          <div class="text-2xl font-bold text-amber-300">{{ dashboard_counts.partial }}</div>
+        </div>
+        <div class="chip rounded-2xl p-4">
+          <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Needs config</div>
+          <div class="text-2xl font-bold text-slate-200">{{ dashboard_counts['needs-config'] }}</div>
+        </div>
+        <div class="chip rounded-2xl p-4">
+          <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Failed</div>
+          <div class="text-2xl font-bold text-rose-300">{{ dashboard_counts.failed }}</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="glass rounded-[28px] p-6 md:p-8 fade-up">
+      <h2 class="text-xl md:text-2xl font-bold mb-4">How it works</h2>
+      <ol class="space-y-4 text-sm text-slate-300">
+        <li class="flex gap-3">
+          <span class="status-dot bg-emerald-300 mt-1"></span>
+          <div>
+            <div class="font-semibold text-white">1. Build the dev.to article</div>
+            <p class="muted mt-1">LaunchBlast turns the brief into Markdown and submits it with tags.</p>
+          </div>
+        </li>
+        <li class="flex gap-3">
+          <span class="status-dot bg-amber-300 mt-1"></span>
+          <div>
+            <div class="font-semibold text-white">2. Submit the Hacker News link</div>
+            <p class="muted mt-1">The app logs in, fetches the submit token, and posts the URL.</p>
+          </div>
+        </li>
+        <li class="flex gap-3">
+          <span class="status-dot bg-sky-300 mt-1"></span>
+          <div>
+            <div class="font-semibold text-white">3. Store the outcome</div>
+            <p class="muted mt-1">Each response is persisted so you can open the status detail page later.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+  </aside>
+</div>
+
+<section class="glass rounded-[28px] p-6 md:p-8 mt-8 fade-up">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-bold">Recent submissions</h2>
+      <p class="muted mt-1">Open any launch to inspect the dev.to and HN result payloads.</p>
+    </div>
+    <div class="text-sm text-slate-400">Total: {{ dashboard_counts.total }}</div>
+  </div>
+
+  {% if recent_submissions %}
+  <div class="grid gap-4">
+    {% for submission in recent_submissions %}
+    <a href="{{ url_for('submission_detail', submission_id=submission.id) }}" class="block rounded-3xl border border-slate-700/70 bg-slate-950/35 px-5 py-4 transition hover:border-emerald-300/50 hover:bg-slate-950/55">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <h3 class="text-lg font-semibold text-white">{{ submission.product_name }}</h3>
+            <span class="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]
+              {% if submission.overall_status == 'complete' %}bg-emerald-300/15 text-emerald-300
+              {% elif submission.overall_status == 'partial' %}bg-amber-300/15 text-amber-300
+              {% elif submission.overall_status == 'needs-config' %}bg-slate-300/15 text-slate-300
+              {% else %}bg-rose-300/15 text-rose-300{% endif %}">
+              {{ submission.overall_status.replace('-', ' ') }}
+            </span>
+          </div>
+          <p class="text-slate-300">{{ submission.tagline }}</p>
+          <p class="text-slate-500 text-sm mt-1 break-all">{{ submission.product_url }}</p>
+        </div>
+        <div class="text-sm text-slate-400 lg:text-right">
+          <div>dev.to: <span class="font-medium text-slate-200">{{ submission.devto_status }}</span></div>
+          <div>HN: <span class="font-medium text-slate-200">{{ submission.hn_status }}</span></div>
+        </div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="rounded-3xl border border-dashed border-slate-700 bg-slate-950/30 px-6 py-10 text-center">
+    <h3 class="text-lg font-semibold text-white mb-2">No submissions yet</h3>
+    <p class="muted">Create the first launch above and LaunchBlast will post it to dev.to and Hacker News.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

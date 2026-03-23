@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ submission.product_name }} - LaunchBlast{% endblock %}
+{% block content %}
+<div class="mb-6">
+  <a href="{{ url_for('index') }}" class="text-sm text-slate-300 hover:text-white transition">&larr; Back to LaunchBlast</a>
+</div>
+
+<section class="glass rounded-[28px] p-6 md:p-8 lg:p-10 fade-up">
+  <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+    <div class="max-w-3xl">
+      <div class="inline-flex items-center gap-2 chip rounded-full px-4 py-2 text-[11px] uppercase tracking-[0.3em] text-slate-300 mb-5">
+        <span class="status-dot {% if submission.overall_status == 'complete' %}bg-emerald-300{% elif submission.overall_status == 'partial' %}bg-amber-300{% elif submission.overall_status == 'needs-config' %}bg-slate-300{% else %}bg-rose-300{% endif %}"></span>
+        Submission status
+      </div>
+      <h1 class="display-font text-4xl md:text-5xl lg:text-7xl font-bold leading-[0.92] mb-4">
+        {{ submission.product_name }}
+      </h1>
+      <p class="text-xl text-slate-300 mb-4">{{ submission.tagline }}</p>
+      <p class="text-slate-400 max-w-3xl leading-8">{{ submission.description }}</p>
+    </div>
+    <div class="glass-strong rounded-[24px] px-5 py-4 min-w-[15rem]">
+      <div class="text-[11px] uppercase tracking-[0.24em] text-slate-500 mb-2">Overall</div>
+      <div class="text-2xl font-bold text-white">{{ submission.overall_status.replace('-', ' ') }}</div>
+      <div class="text-sm text-slate-400 mt-2 break-all">{{ submission.product_url }}</div>
+      <div class="text-xs uppercase tracking-[0.22em] text-slate-500 mt-4">Created</div>
+      <div class="text-sm text-slate-300 mt-1">{{ submission.created_at }}</div>
+    </div>
+  </div>
+</section>
+
+<div class="grid lg:grid-cols-2 gap-8 mt-8">
+  <section class="glass rounded-[28px] p-6 md:p-8 fade-up">
+    <div class="flex items-center justify-between gap-4 mb-5">
+      <h2 class="text-2xl md:text-3xl font-bold">dev.to</h2>
+      <span class="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]
+        {% if submission.devto_status == 'published' %}bg-emerald-300/15 text-emerald-300
+        {% elif submission.devto_status == 'draft' %}bg-sky-300/15 text-sky-300
+        {% elif submission.devto_status == 'not configured' %}bg-slate-300/15 text-slate-300
+        {% else %}bg-rose-300/15 text-rose-300{% endif %}">
+        {{ submission.devto_status }}
+      </span>
+    </div>
+    <p class="text-slate-300 leading-8 mb-5">{{ submission.devto_message }}</p>
+    {% if submission.devto_url %}
+    <a href="{{ submission.devto_url }}" target="_blank" rel="noreferrer" class="inline-flex items-center rounded-2xl bg-emerald-300 px-4 py-3 font-semibold text-slate-950">
+      Open dev.to post
+    </a>
+    {% endif %}
+  </section>
+
+  <section class="glass rounded-[28px] p-6 md:p-8 fade-up">
+    <div class="flex items-center justify-between gap-4 mb-5">
+      <h2 class="text-2xl md:text-3xl font-bold">Hacker News</h2>
+      <span class="rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.2em]
+        {% if submission.hn_status == 'submitted' %}bg-emerald-300/15 text-emerald-300
+        {% elif submission.hn_status == 'not configured' %}bg-slate-300/15 text-slate-300
+        {% else %}bg-rose-300/15 text-rose-300{% endif %}">
+        {{ submission.hn_status }}
+      </span>
+    </div>
+    <p class="text-slate-300 leading-8 mb-5">{{ submission.hn_message }}</p>
+    {% if submission.hn_url %}
+    <a href="{{ submission.hn_url }}" target="_blank" rel="noreferrer" class="inline-flex items-center rounded-2xl bg-amber-300 px-4 py-3 font-semibold text-slate-950">
+      Open Hacker News thread
+    </a>
+    {% endif %}
+  </section>
+</div>
+
+<section class="glass rounded-[28px] p-6 md:p-8 mt-8 fade-up">
+  <div class="flex items-center justify-between gap-4 mb-5">
+    <div>
+      <h2 class="text-2xl md:text-3xl font-bold">Captured launch data</h2>
+      <p class="muted mt-1">This is the payload LaunchBlast used when posting.</p>
+    </div>
+  </div>
+  <div class="grid md:grid-cols-2 gap-4 text-sm">
+    <div class="chip rounded-2xl px-4 py-4">
+      <div class="text-[11px] uppercase tracking-[0.22em] text-slate-500 mb-1">Product</div>
+      <div class="text-white font-medium break-words">{{ submission.product_name }}</div>
+    </div>
+    <div class="chip rounded-2xl px-4 py-4">
+      <div class="text-[11px] uppercase tracking-[0.22em] text-slate-500 mb-1">URL</div>
+      <div class="text-white font-medium break-all">{{ submission.product_url }}</div>
+    </div>
+    <div class="chip rounded-2xl px-4 py-4 md:col-span-2">
+      <div class="text-[11px] uppercase tracking-[0.22em] text-slate-500 mb-1">Tagline</div>
+      <div class="text-white font-medium">{{ submission.tagline }}</div>
+    </div>
+    <div class="chip rounded-2xl px-4 py-4 md:col-span-2">
+      <div class="text-[11px] uppercase tracking-[0.22em] text-slate-500 mb-1">Description</div>
+      <div class="text-white font-medium leading-7 whitespace-pre-wrap">{{ submission.description }}</div>
+    </div>
+  </div>
+</section>
+{% endblock %}
